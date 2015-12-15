@@ -1,8 +1,9 @@
-{-# LANGUAGE CPP                   #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE CPP                        #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE UndecidableInstances       #-}
 
 module Text.LaTeX.LambdaTeX.Types (
       module Text.LaTeX.LambdaTeX.Types
@@ -36,11 +37,13 @@ import           Data.String                          (IsString (..))
 import           Data.Text                            (Text)
 import qualified Data.Text.IO                         as T (putStrLn)
 
-import           Text.LaTeX.Base                      (LaTeX, LaTeXT,
+import           Text.LaTeX.Base                      (LaTeX, LaTeXT (..),
                                                        execLaTeXT, runLaTeXT)
-import           Text.LaTeX.Base.Class                (LaTeXC (..))
+import           Text.LaTeX.Base.Class                (LaTeXC (..), fromLaTeX)
 import           Text.LaTeX.Base.Writer               (extractLaTeX,
                                                        extractLaTeX_, textell)
+
+import           Text.LaTeX.Packages.AMSMath          ()
 
 import           Text.LaTeX.LambdaTeX.Package.Types
 import           Text.LaTeX.LambdaTeX.Reference.Types
@@ -51,11 +54,31 @@ type LambdaTeXT = ΛTeXT
 type LambdaTeXT_ m = ΛTeXT_ m
 
 type ΛTeXT_ m = ΛTeXT m ()
-newtype ΛTeXT m a =
-    ΛTeXT { unwrapΛTeXT :: RWST ΛConfig ΛOutput ΛState (LaTeXT m) a }
 
-runΛTeX' :: Monad m => ΛTeXT m a -> ΛConfig -> ΛState -> m ((a, ΛState, ΛOutput), LaTeX)
-runΛTeX' lt conf state = runLaTeXT (runRWST (unwrapΛTeXT lt) conf state)
+newtype ΛTeXT m a =
+    ΛTeXT { unwrapΛTeXT :: LaTeXT (RWST ΛConfig ΛOutput ΛState m) a }
+
+-- TODO(kerckhove) Move and add amsmath dependency
+instance (Monad m, a ~ ()) => Num (ΛTeXT m a) where
+    (+) a b = ΛTeXT $ unwrapΛTeXT a + unwrapΛTeXT b
+    (-) a b = ΛTeXT $ unwrapΛTeXT a - unwrapΛTeXT b
+    (*) a b = ΛTeXT $ unwrapΛTeXT a * unwrapΛTeXT a
+    negate = ΛTeXT . negate . unwrapΛTeXT
+    fromInteger = fromLaTeX . fromInteger
+    abs = ΛTeXT . abs . unwrapΛTeXT
+    -- Non-defined methods
+    signum = ΛTeXT . signum . unwrapΛTeXT
+
+
+-- TODO(kerckhove) Move and add amsmath dependency
+instance (Monad m, a ~ ()) => Fractional (ΛTeXT m a) where
+    (/) a b = ΛTeXT $ unwrapΛTeXT a / unwrapΛTeXT b
+    fromRational = fromLaTeX . fromRational
+
+-- TODO(kerckhove) Also instantiate floating?
+
+runΛTeX :: Monad m => ΛTeXT m a -> ΛConfig -> ΛState -> m ((a, LaTeX), ΛState, ΛOutput)
+runΛTeX func conf state = runRWST (runLaTeXT $ unwrapΛTeXT func) conf state
 
 instance Functor f => Functor (ΛTeXT f) where
     fmap f = ΛTeXT . fmap f . unwrapΛTeXT
@@ -90,7 +113,7 @@ instance (Monad m, a ~ ()) => Monoid (ΛTeXT m a) where
     mappend = (>>)
 
 λtextell :: Monad m => LaTeX -> ΛTeXT m ()
-λtextell = ΛTeXT . lift . textell
+λtextell = ΛTeXT . textell
 
 λtell :: Monad m => ΛOutput -> ΛTeXT m ()
 λtell = ΛTeXT . tell
@@ -113,20 +136,7 @@ instance (Monad m, a ~ ()) => Monoid (ΛTeXT m a) where
 -- | This function run a 'LaTeXT' computation,
 -- lifting the result again in the monad.
 extractΛLaTeX :: Monad m => ΛTeXT m a -> ΛTeXT m (a,LaTeX)
-extractΛLaTeX func = ΛTeXT $ do
-    c <- ask
-    s <- get
-
-    let mfunc = unwrapΛTeXT func
-    -- let doIt :: LaTeXT m (a, ΛState, ΛOutput)
-        doIt = runRWST mfunc c s
-    -- let getLaTeX :: LaTeXT m ((a, ΛState, ΛOutput), LaTeX)
-        getLaTeX = extractLaTeX doIt
-    ((result, state, output), latex) <- lift getLaTeX
-
-    tell output
-    put state
-    return (result, latex)
+extractΛLaTeX = ΛTeXT . extractLaTeX . unwrapΛTeXT
 
 extractΛLaTeX_ :: Monad m => ΛTeXT m a -> ΛTeXT m LaTeX
 extractΛLaTeX_ = liftM snd . extractΛLaTeX
@@ -162,6 +172,9 @@ data ΛState = State {
 
 -- ** Part (Subset of notes)
 newtype Part = Part { unPart :: [Text] }
+
+emptyPart :: Part
+emptyPart = Part { unPart = [] }
 
 pushPart :: Part -> Text -> Part
 pushPart p t = Part { unPart = unPart p ++ [t] }

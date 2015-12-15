@@ -26,6 +26,25 @@ online = "online"
 article :: ReferenceType
 article = "article"
 
+-- * Defining references
+
+-- TODO(kerckhove) Check for duplicate fields?
+makeReference :: ReferenceType -> Text -> [(Text, Text)] -> Reference
+makeReference = Reference
+
+-- * Using references
+
+cite :: Monad m => Reference -> ΛTeXT m ()
+cite ref = do
+  fromLaTeX $ comm1 "cite" $ TeXRaw $ referenceName ref
+  addReference ref
+
+nocite :: Monad m => Reference -> ΛTeXT m ()
+nocite ref = do
+  fromLaTeX $ comm1 "nocite" $ TeXRaw $ referenceName ref
+  addReference ref
+
+-- * Handling references
 showReferences :: [Reference] -> Text
 showReferences rs = (`mappend` "\n\n") . T.intercalate ",\n\n" $ map showRef rs
   where
@@ -46,17 +65,3 @@ showReferences rs = (`mappend` "\n\n") . T.intercalate ",\n\n" $ map showRef rs
 
 addReference :: Monad m => Reference -> ΛTeXT m ()
 addReference ref = λtell $ mempty { outputExternalReferences = S.singleton ref }
-
-
--- * Using references
-
-cite :: Monad m => Reference -> ΛTeXT m ()
-cite ref = do
-  fromLaTeX $ comm1 "cite" $ TeXRaw $ referenceName ref
-  addReference ref
-
-nocite :: Monad m => Reference -> ΛTeXT m ()
-nocite ref = do
-  fromLaTeX $ comm1 "nocite" $ TeXRaw $ referenceName ref
-  addReference ref
-
