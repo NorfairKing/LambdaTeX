@@ -15,8 +15,20 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Text.LaTeX
-  build-depends:       base >= 4.7 && < 5
+  exposed-modules:     Text.LaTeX.LambdaTeX
+                       Text.LaTeX.LambdaTeX.Reference
+                       Text.LaTeX.LambdaTeX.Reference.Types
+                       Text.LaTeX.LambdaTeX.Types
+                       Text.LaTeX.LambdaTeX.Package
+                       Text.LaTeX.LambdaTeX.Package.Types
+                       Text.LaTeX.LambdaTeX.Selection
+                       Text.LaTeX.LambdaTeX.Selection.Types
+  build-depends:       base             >= 4.7      && < 5.0
+                     , HaTeX            >= 3.16     && < 3.17
+                     , mtl              >= 2.2      && < 2.3
+                     , text             >= 1.2      && < 1.3
+                     , containers       >= 0.5      && < 0.6
+                     , transformers     >= 0.4      && < 0.5
   default-language:    Haskell2010
 
 test-suite lambdatex-test
