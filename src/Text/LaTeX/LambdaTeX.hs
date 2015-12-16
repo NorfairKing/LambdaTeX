@@ -6,7 +6,11 @@ module Text.LaTeX.LambdaTeX (
     -- * Using ΛTeX
     , note
 
-    -- * Re-exports
+    -- ** Packages dependencies
+    , packageDep
+    , packageDep_
+
+    -- ** Re-exports
     , module Text.LaTeX.LambdaTeX.Types
     , module Text.LaTeX.LambdaTeX.Reference
     , module Text.LaTeX.LambdaTeX.Reference.Types

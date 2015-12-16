@@ -7,8 +7,15 @@ import qualified Data.Set                           as S
 import           Text.LaTeX.LambdaTeX.Package.Types
 import           Text.LaTeX.LambdaTeX.Types
 
+-- | Declare a dependency to a package, with given arguments
+packageDep :: Monad m => [LaTeX] -- ^ Arguments
+                      -> Text -- ^ Name of the LaTeX package
+                      -> ΛTeXT m ()
+packageDep args name = λtell $ mempty { outputPackageDependencies = S.singleton (PackageDep name args) }
+
+-- | Declare a dependency to a package without any arguments
 packageDep_ :: Monad m => Text -> ΛTeXT m ()
-packageDep_ name = packageDep name []
+packageDep_ name = packageDep [] name
 
 injectPackageDependencies :: [PackageDep] -> LaTeX -> LaTeX
 injectPackageDependencies ps = go
@@ -27,5 +34,3 @@ injectPackageDependencies ps = go
 usepackage :: [LaTeX] -> Text -> LaTeX
 usepackage ls pn = TeXComm "usepackage" [MOptArg ls, FixArg $ TeXRaw pn]
 
-packageDep :: Monad m => Text -> [LaTeX] -> ΛTeXT m ()
-packageDep name args = λtell $ mempty { outputPackageDependencies = S.singleton (PackageDep name args) }
