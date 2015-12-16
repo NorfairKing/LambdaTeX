@@ -11,12 +11,16 @@ module Text.LaTeX.LambdaTeX.Types (
     , module Text.LaTeX.LambdaTeX.Reference.Types
     , module Text.LaTeX.LambdaTeX.Selection.Types
 
+#if !MIN_VERSION_base(4,8,0)
+    , module Control.Applicative
+    , module Data.Monoid
+#endif
     , Text
     ) where
 
 #if !MIN_VERSION_base(4,8,0)
 import           Control.Applicative
-import           Data.Monoid
+import           Data.Monoid                          hiding (All)
 #endif
 
 import           Control.Monad                        (liftM)
