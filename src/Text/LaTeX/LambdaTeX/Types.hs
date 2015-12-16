@@ -11,6 +11,10 @@ module Text.LaTeX.LambdaTeX.Types (
     , module Text.LaTeX.LambdaTeX.Reference.Types
     , module Text.LaTeX.LambdaTeX.Selection.Types
 
+#if !MIN_VERSION_base(4,8,0)
+    , module Control.Applicative
+    , module Data.Monoid
+#endif
     , Text
     ) where
 
