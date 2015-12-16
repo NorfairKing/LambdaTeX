@@ -161,7 +161,7 @@ pushPart p t = Part { unPart = unPart p ++ [t] }
 popPart :: Part -> Part
 popPart p = Part { unPart = init $ unPart p }
 
--- * Orphan Monad Transformer instances for LaTeXT
+-- Orphan Monad Transformer instances for LaTeXT
 instance MonadReader r m => MonadReader r (LaTeXT m) where
     ask   = lift ask
     local = local
@@ -178,7 +178,7 @@ instance MonadWriter w m => MonadWriter w (LaTeXT m) where
     pass = pass
 
 
--- * Monad Transformer instances for ΛTeXT
+-- Monad Transformer instances for ΛTeXT
 instance MonadReader r m => MonadReader r (ΛTeXT m) where
     ask   = lift ask
     local = local

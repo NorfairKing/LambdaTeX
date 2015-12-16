@@ -6,25 +6,26 @@ module Text.LaTeX.LambdaTeX (
     -- * Using ΛTeX
     , note
 
+    -- ** References
+    , module Text.LaTeX.LambdaTeX.Reference
+
     -- ** Packages dependencies
-    , packageDep
-    , packageDep_
+    , module Text.LaTeX.LambdaTeX.Package
 
     -- ** Re-exports
     , module Text.LaTeX.LambdaTeX.Types
-    , module Text.LaTeX.LambdaTeX.Reference
-    , module Text.LaTeX.LambdaTeX.Reference.Types
 
     ) where
 
-import           Control.Monad                        (when)
-import           Control.Monad.IO.Class               (MonadIO (..))
+import           Control.Monad                         (when)
+import           Control.Monad.IO.Class                (MonadIO (..))
 
-import qualified Data.Set                             as S
+import qualified Data.Set                              as S
 
-import           Text.LaTeX.Base                      (LaTeX)
+import           Text.LaTeX.Base                       (LaTeX)
 
 import           Text.LaTeX.LambdaTeX.Package
+import           Text.LaTeX.LambdaTeX.Package.Internal
 import           Text.LaTeX.LambdaTeX.Reference
 import           Text.LaTeX.LambdaTeX.Reference.Types
 import           Text.LaTeX.LambdaTeX.Selection

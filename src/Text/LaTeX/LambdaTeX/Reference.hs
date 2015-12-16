@@ -1,7 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Text.LaTeX.LambdaTeX.Reference (
-    module Text.LaTeX.LambdaTeX.Reference
-    ) where
+module Text.LaTeX.LambdaTeX.Reference where
 
 import           Text.LaTeX.Base.Class
 import           Text.LaTeX.Base.Syntax
