@@ -60,13 +60,13 @@ buildLaTeXProject func selec = do
 --      * Automatic package dependency resolution, TODO(kerckhove) with packages in the right order
 execLambdaTeXT :: Monad m => ΛTeXT m a -> Selection -> m (Either String (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
-    ((_,latex), _, output) <- runΛTeX func (Config conf) initState
+    ((_,latex), _, output) <- runΛTeX func (ΛConfig conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
     return $ Right (result, refs)
 
   where
     initState :: ΛState
-    initState = State { stateCurrentPart = emptyPart }
+    initState = ΛState { stateCurrentPart = emptyPart }
 
 

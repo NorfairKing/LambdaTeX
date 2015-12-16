@@ -121,21 +121,24 @@ extractΛLaTeX = ΛTeXT . extractLaTeX . unwrapΛTeXT
 extractΛLaTeX_ :: Monad m => ΛTeXT m a -> ΛTeXT m LaTeX
 extractΛLaTeX_ = liftM snd . extractΛLaTeX
 
-data ΛConfig    = Config {
+-- | Internal ΛTeXT configration
+data ΛConfig    = ΛConfig {
       configSelection :: Selection
     }
-data ΛOutput    = Output {
+
+-- | Internal ΛTeXT configration output
+data ΛOutput    = ΛOutput {
       outputPackageDependencies :: Set PackageDep
     , outputExternalReferences  :: Set Reference
     }
 
 instance Monoid ΛOutput where
-    mempty = Output {
+    mempty = ΛOutput {
             outputPackageDependencies   = S.empty
           , outputExternalReferences    = S.empty
         }
 
-    mappend o1 o2 = Output {
+    mappend o1 o2 = ΛOutput {
             outputPackageDependencies =
                 S.union
                     (outputPackageDependencies o1)
@@ -146,7 +149,8 @@ instance Monoid ΛOutput where
                     (outputExternalReferences o2)
         }
 
-data ΛState = State {
+-- | Internal ΛTeXT configration state
+data ΛState = ΛState {
       stateCurrentPart :: Part
     }
 
