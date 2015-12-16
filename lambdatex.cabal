@@ -20,15 +20,16 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Text.LaTeX.LambdaTeX
+                       Text.LaTeX.LambdaTeX.Package
+                       Text.LaTeX.LambdaTeX.Package.Internal
+                       Text.LaTeX.LambdaTeX.Package.Types
                        Text.LaTeX.LambdaTeX.Reference
                        Text.LaTeX.LambdaTeX.Reference.Internal
                        Text.LaTeX.LambdaTeX.Reference.Types
-                       Text.LaTeX.LambdaTeX.Types
-                       Text.LaTeX.LambdaTeX.Package
-                       Text.LaTeX.LambdaTeX.Package.Types
                        Text.LaTeX.LambdaTeX.Selection
                        Text.LaTeX.LambdaTeX.Selection.Internal
                        Text.LaTeX.LambdaTeX.Selection.Types
+                       Text.LaTeX.LambdaTeX.Types
   build-depends:       base             >= 4.7      && < 5.0
                      , HaTeX            >= 3.16     && < 3.17
                      , mtl              >= 2.2      && < 2.3
