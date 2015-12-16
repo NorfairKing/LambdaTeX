@@ -89,10 +89,7 @@ instance (Functor f, Applicative f, Monad f) => Applicative (ΛTeXT f) where
 
 instance Monad m => Monad (ΛTeXT m) where
     return = ΛTeXT . return
-    (ΛTeXT c) >>= f = ΛTeXT $ do
-        a <- c
-        let ΛTeXT c' = f a
-        c'
+    (ΛTeXT c) >>= f = ΛTeXT $ c >>= unwrapΛTeXT . f
     fail = return . error
 
 
