@@ -57,6 +57,7 @@ type ΛTeXT_ m = ΛTeXT m ()
 
 newtype ΛTeXT m a =
     ΛTeXT { unwrapΛTeXT :: LaTeXT (RWST ΛConfig ΛOutput ΛState m) a }
+    deriving (Functor, Applicative, Monad)
 
 -- TODO(kerckhove) Move and add amsmath dependency
 instance (Monad m, a ~ ()) => Num (ΛTeXT m a) where
@@ -80,19 +81,6 @@ instance (Monad m, a ~ ()) => Fractional (ΛTeXT m a) where
 runΛTeX :: Monad m => ΛTeXT m a -> ΛConfig -> ΛState -> m ((a, LaTeX), ΛState, ΛOutput)
 runΛTeX func conf state = runRWST (runLaTeXT $ unwrapΛTeXT func) conf state
 
-instance Functor f => Functor (ΛTeXT f) where
-    fmap f = ΛTeXT . fmap f . unwrapΛTeXT
-
-instance (Functor f, Applicative f, Monad f) => Applicative (ΛTeXT f) where
-    pure = ΛTeXT . pure
-    (ΛTeXT f) <*> (ΛTeXT x) = ΛTeXT $ f <*> x
-
-instance Monad m => Monad (ΛTeXT m) where
-    return = ΛTeXT . return
-    (ΛTeXT c) >>= f = ΛTeXT $ c >>= unwrapΛTeXT . f
-    fail = return . error
-
-
 instance MonadTrans ΛTeXT where
     lift = ΛTeXT . lift . lift
 
@@ -103,7 +91,7 @@ instance (Monad m, a ~ ()) => LaTeXC (ΛTeXT m a) where
     liftListL f xs = mapM extractΛLaTeX_ xs >>= λtextell . f
 
 instance (Monad m, a ~ ()) => IsString (ΛTeXT m a) where
- fromString = λtextell . fromString
+    fromString = λtextell . fromString
 
 instance (Monad m, a ~ ()) => Monoid (ΛTeXT m a) where
     mempty = return ()
