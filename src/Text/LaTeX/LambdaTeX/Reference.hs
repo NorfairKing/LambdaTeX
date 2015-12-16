@@ -4,12 +4,8 @@ module Text.LaTeX.LambdaTeX.Reference where
 import           Text.LaTeX.Base.Class
 import           Text.LaTeX.Base.Syntax
 
-import           Data.List                            (intercalate)
 import qualified Data.Set                             as S
-import           Data.Text                            (Text)
 import qualified Data.Text                            as T
-
-import           Control.Monad.Writer                 (tell)
 
 import           Text.LaTeX.LambdaTeX.Reference.Types
 import           Text.LaTeX.LambdaTeX.Types

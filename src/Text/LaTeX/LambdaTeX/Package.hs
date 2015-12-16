@@ -4,8 +4,6 @@ import           Text.LaTeX.Base.Syntax
 
 import qualified Data.Set                           as S
 
-import           Control.Monad.Writer               (tell)
-
 import           Text.LaTeX.LambdaTeX.Package.Types
 import           Text.LaTeX.LambdaTeX.Types
 

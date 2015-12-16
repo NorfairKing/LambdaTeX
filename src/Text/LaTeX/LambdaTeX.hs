@@ -3,31 +3,20 @@
 {-# LANGUAGE UndecidableInstances  #-}
 
 module Text.LaTeX.LambdaTeX (
-      module Text.LaTeX.LambdaTeX
+      note
+    , execLambdaTeXT
+
     , module Text.LaTeX.LambdaTeX.Types
     , module Text.LaTeX.LambdaTeX.Reference
     , module Text.LaTeX.LambdaTeX.Reference.Types
+
     ) where
 
 import           Control.Monad                        (when)
-import           Control.Monad.IO.Class               (MonadIO, liftIO)
-import           Control.Monad.Reader                 (MonadReader (..), asks)
-import           Control.Monad.RWS                    (MonadRWS (..), RWST (..),
-                                                       runRWST)
-import           Control.Monad.State                  (MonadState (..), gets,
-                                                       modify)
-import           Control.Monad.Trans                  (MonadTrans (..), lift)
-import           Control.Monad.Writer                 (MonadWriter (..))
 
-import           Data.List                            (isPrefixOf)
-import           Data.Ord                             (comparing)
-import           Data.Set                             (Set)
 import qualified Data.Set                             as S
-import           Data.Text                            (Text)
-import qualified Data.Text.IO                         as T (putStrLn)
 
-import           Text.LaTeX.Base                      (LaTeX, LaTeXT,
-                                                       execLaTeXT)
+import           Text.LaTeX.Base                      (LaTeX)
 
 import           Text.LaTeX.LambdaTeX.Package
 import           Text.LaTeX.LambdaTeX.Reference
@@ -49,13 +38,13 @@ execLambdaTeXT func conf = do
     initState :: ΛState
     initState = State { stateCurrentPart = emptyPart }
 
+-- | Make a sub-part of the document with a name.
+--   This allows you to use the subset-selection feature later.
 note :: Monad m => Text -> ΛTeXT m () -> ΛTeXT m ()
 note partname func = do
     pushCurrentPart partname
 
-    part <- currentPart
     s <- isSelected
-
     when s func
 
     popCurrentPart

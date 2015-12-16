@@ -7,6 +7,9 @@
 
 module Text.LaTeX.LambdaTeX.Types (
       module Text.LaTeX.LambdaTeX.Types
+    , module Text.LaTeX.LambdaTeX.Package.Types
+    , module Text.LaTeX.LambdaTeX.Reference.Types
+    , module Text.LaTeX.LambdaTeX.Selection.Types
 
     , Text
     ) where
@@ -16,32 +19,23 @@ import           Control.Applicative
 import           Data.Monoid
 #endif
 
-import           Control.Monad                        (liftM, when)
+import           Control.Monad                        (liftM)
 import           Control.Monad.IO.Class               (MonadIO, liftIO)
-import           Control.Monad.Reader                 (MonadReader (..),
-                                                       ReaderT (..), asks)
+import           Control.Monad.Reader                 (MonadReader (..), asks)
 import           Control.Monad.RWS                    (RWST (..))
-import           Control.Monad.State                  (MonadState (..),
-                                                       StateT (..), gets,
+import           Control.Monad.State                  (MonadState (..), gets,
                                                        modify)
 import           Control.Monad.Trans                  (MonadTrans (..), lift)
-import           Control.Monad.Writer                 (MonadWriter (..),
-                                                       WriterT (..))
-import           Data.Functor.Identity
+import           Control.Monad.Writer                 (MonadWriter (..))
 
-import           Data.List                            (isPrefixOf)
-import           Data.Ord                             (comparing)
 import           Data.Set                             (Set)
 import qualified Data.Set                             as S
 import           Data.String                          (IsString (..))
 import           Data.Text                            (Text)
-import qualified Data.Text.IO                         as T (putStrLn)
 
-import           Text.LaTeX.Base                      (LaTeX, LaTeXT (..),
-                                                       execLaTeXT, runLaTeXT)
+import           Text.LaTeX.Base                      (LaTeX, LaTeXT, runLaTeXT)
 import           Text.LaTeX.Base.Class                (LaTeXC (..), fromLaTeX)
-import           Text.LaTeX.Base.Writer               (extractLaTeX,
-                                                       extractLaTeX_, textell)
+import           Text.LaTeX.Base.Writer               (extractLaTeX, textell)
 
 import           Text.LaTeX.Packages.AMSMath          ()
 
@@ -63,7 +57,7 @@ newtype ΛTeXT m a =
 instance (Monad m, a ~ ()) => Num (ΛTeXT m a) where
     (+) a b = ΛTeXT $ unwrapΛTeXT a + unwrapΛTeXT b
     (-) a b = ΛTeXT $ unwrapΛTeXT a - unwrapΛTeXT b
-    (*) a b = ΛTeXT $ unwrapΛTeXT a * unwrapΛTeXT a
+    (*) a b = ΛTeXT $ unwrapΛTeXT a * unwrapΛTeXT b
     negate = ΛTeXT . negate . unwrapΛTeXT
     fromInteger = fromLaTeX . fromInteger
     abs = ΛTeXT . abs . unwrapΛTeXT
