@@ -1,7 +1,3 @@
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UndecidableInstances  #-}
-
 module Text.LaTeX.LambdaTeX (
     -- * Building ΛTeX
       execLambdaTeXT
