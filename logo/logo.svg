@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="56.239pt" height="29.495pt" viewBox="0 0 56.239 29.495" version="1.1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="54.232pt" height="29.495pt" viewBox="0 0 54.232 29.495" version="1.1">
 <defs>
 <g>
 <symbol overflow="visible" id="glyph0-0">
@@ -17,18 +17,18 @@
 </g>
 </defs>
 <g id="surface1">
-<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 4.980469 20.226562 L 8.964844 14.25 L 4.980469 8.273438 L 7.96875 8.273438 L 11.953125 14.25 L 7.96875 20.226562 Z M 4.980469 20.226562 "/>
-<path style=" stroke:none;fill-rule:nonzero;fill:rgb(59.999084%,39.99939%,19.999695%);fill-opacity:1;" d="M 12.953125 14.25 L 8.964844 8.273438 L 11.953125 8.273438 L 19.925781 20.226562 L 16.9375 20.226562 L 14.445312 16.492188 L 11.953125 20.226562 L 8.964844 20.226562 Z M 12.953125 14.25 "/>
-<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 18.597656 16.738281 L 17.269531 14.746094 L 21.917969 14.746094 L 21.917969 16.738281 Z M 18.597656 16.738281 "/>
-<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 16.605469 13.75 L 15.277344 11.757812 L 21.917969 11.757812 L 21.917969 13.75 Z M 16.605469 13.75 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 4.980469 20.644531 L 8.964844 14.667969 L 4.980469 8.691406 L 7.96875 8.691406 L 11.953125 14.667969 L 7.96875 20.644531 Z M 4.980469 20.644531 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(59.999084%,39.99939%,19.999695%);fill-opacity:1;" d="M 12.953125 14.667969 L 8.964844 8.691406 L 11.953125 8.691406 L 19.925781 20.644531 L 16.9375 20.644531 L 14.445312 16.910156 L 11.953125 20.644531 L 8.964844 20.644531 Z M 12.953125 14.667969 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 18.597656 17.15625 L 17.269531 15.164062 L 21.917969 15.164062 L 21.917969 17.15625 Z M 18.597656 17.15625 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,50%,0%);fill-opacity:1;" d="M 16.605469 14.167969 L 15.277344 12.175781 L 21.917969 12.175781 L 21.917969 14.167969 Z M 16.605469 14.167969 "/>
 <g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-1" x="21.802" y="18.105"/>
+  <use xlink:href="#glyph0-1" x="19.795" y="18.105"/>
 </g>
 <g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-2" x="29.605" y="21.193"/>
+  <use xlink:href="#glyph0-2" x="27.599" y="21.193"/>
 </g>
 <g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-3" x="37.407" y="18.105"/>
+  <use xlink:href="#glyph0-3" x="35.4" y="18.105"/>
 </g>
 </g>
 </svg>
