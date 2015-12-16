@@ -49,46 +49,48 @@ import           Text.LaTeX.LambdaTeX.Utils
 --      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
 buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either Text ())
 buildLaTeXProject func conf = do
-    res <- execLambdaTeXT func $ projectGenerationConfig conf
-    case res of
-        Left err -> return $ Left err
-        Right (latex, refs) -> do
+    (errs, (latex, refs)) <- execLambdaTeXT func $ projectGenerationConfig conf
+    if T.null errs
+    then do
+        -- Render tex file
+        let mainTexFile = projectTexFileName conf ++ "tex"
+        liftIO $ renderFile mainTexFile latex
 
-            -- Render tex file
-            let mainTexFile = projectTexFileName conf ++ "tex"
-            liftIO $ renderFile mainTexFile latex
+        -- Render bib file
+        let mainBibFile = projectBibFileName conf ++ "bib"
+        liftIO $ removeIfExists mainBibFile
+        liftIO $ T.appendFile mainBibFile $ renderReferences refs
 
-            -- Render bib file
-            let mainBibFile = projectBibFileName conf ++ "bib"
-            liftIO $ removeIfExists mainBibFile
-            liftIO $ T.appendFile mainBibFile $ renderReferences refs
-
-            return $ Right ()
+        return $ Right ()
+    else do
+        return $ Left errs
 
 -- | Execute a ΛTeXT generation
---   This either returns Left with an error or Right with the resulting LaTeX value and a list of external references that need to be put into a bibtex file.
+--   This either returns a tuple of the errors and a tuple of the resulting LaTeX value and a list of external references that need to be put into a bibtex file.
 --
 --   This function takes care of a lot of safety issues:
 --
 --      * Subset selection. This allows you to build large documents in parts.
---        TODO(kerckhove) allow for faulty documents to build parts!
---          Maybe give specialized Config instead of just selection
 --      * External dependency selection. No more '??' for external references in the output pdf.
 --      * Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
-execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Either Text (LaTeX, [Reference]))
+execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Text, (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
 
+    -- Check reference errors
     let made = outputLabelsMade output
         needed = outputLabelsNeeded output
         diff = S.difference needed made
-    if S.null diff
-    then return $ Right (result, refs)
-    else return $ Left $ mappend "References needed but not made: " (T.concat $ S.toList diff)
+
+    let referss = if S.null diff
+        then T.empty
+        else mappend "References needed but not made: " (T.pack $ show $ S.toList diff)
+
+    return (referss, (latex, refs))
 
   where
     initState :: ΛState
