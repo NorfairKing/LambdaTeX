@@ -1,7 +1,9 @@
+-- |
+-- TODO(kerckhove) big example here!
+--
 module Text.LaTeX.LambdaTeX (
     -- * Building ΛTeX
-      buildLaTeXProject
-    , execLambdaTeXT
+      module Text.LaTeX.LambdaTeX
 
     -- ** Selections
     , module Text.LaTeX.LambdaTeX.Selection
@@ -40,9 +42,9 @@ import           Text.LaTeX.LambdaTeX.Types
 --      * Automatic bibtex file generation
 --      * All safety provided by 'execLambdaTeXT'
 --      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
-buildLaTeXProject :: MonadIO m => ΛTeXT m a -> Selection -> m (Either String ())
-buildLaTeXProject func selec = do
-    res <- execLambdaTeXT func selec
+buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either String ())
+buildLaTeXProject func conf = do
+    res <- execLambdaTeXT func $ projectGenerationConfig conf
     case res of
         Left err -> return $ Left err
         Right _ -> return $ Right ()
@@ -60,9 +62,9 @@ buildLaTeXProject func selec = do
 --      * TODO(kerckhove) Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
-execLambdaTeXT :: Monad m => ΛTeXT m a -> Selection -> m (Either String (LaTeX, [Reference]))
+execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Either String (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
-    ((_,latex), _, output) <- runΛTeX func (ΛConfig conf) initState
+    ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
     return $ Right (result, refs)
@@ -72,3 +74,30 @@ execLambdaTeXT func conf = do
     initState = ΛState { stateCurrentPart = emptyPart }
 
 
+-- * Configuration
+
+-- | Configuration of a ΛTeX project
+data ProjectConfig = ProjectConfig {
+      projectGenerationConfig :: GenerationConfig
+    }
+
+-- | Default project configuration.
+--
+--  Modify this instead of building your own 'ProjectConfig'
+defaultProjectConfig :: ProjectConfig
+defaultProjectConfig = ProjectConfig {
+      projectGenerationConfig = defaultGenerationConfig
+    }
+
+-- | Configuration of ΛTeX generation
+data GenerationConfig = GenerationConfig {
+      generationSelection :: Selection
+    }
+
+-- | Default generation config.
+--
+--  Modify this instead of building your own 'GenerationConfig'
+defaultGenerationConfig :: GenerationConfig
+defaultGenerationConfig = GenerationConfig {
+      generationSelection = [All]
+    }
