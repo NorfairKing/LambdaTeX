@@ -7,6 +7,18 @@ import qualified Data.Text                            as T
 import           Text.LaTeX.LambdaTeX.Reference.Types
 import           Text.LaTeX.LambdaTeX.Types
 
+-- * Internal references
+
+-- | Declare that a label has been made
+addLabelMade ::  Monad m => Text -> ΛTeXT m ()
+addLabelMade label = λtell $ mempty { outputLabelsMade = S.singleton label }
+
+-- | Declare that a label is needed
+addLabelNeeded ::  Monad m => Text -> ΛTeXT m ()
+addLabelNeeded label = λtell $ mempty { outputLabelsNeeded = S.singleton label }
+
+-- * External references
+
 -- | Render references to bib(La)TeX format
 renderReferences :: [Reference] -> Text
 renderReferences rs = (`mappend` "\n\n") . T.intercalate ",\n\n" $ map showRef rs

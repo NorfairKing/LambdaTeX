@@ -134,12 +134,16 @@ data ΛConfig    = ΛConfig {
 data ΛOutput    = ΛOutput {
       outputPackageDependencies :: Set PackageDep
     , outputExternalReferences  :: Set Reference
+    , outputLabelsMade          :: Set Text
+    , outputLabelsNeeded        :: Set Text
     }
 
 instance Monoid ΛOutput where
     mempty = ΛOutput {
             outputPackageDependencies   = S.empty
           , outputExternalReferences    = S.empty
+          , outputLabelsMade = S.empty
+          , outputLabelsNeeded = S.empty
         }
 
     mappend o1 o2 = ΛOutput {
@@ -151,6 +155,14 @@ instance Monoid ΛOutput where
                 S.union
                     (outputExternalReferences o1)
                     (outputExternalReferences o2)
+          , outputLabelsMade =
+                S.union
+                    (outputLabelsMade o1)
+                    (outputLabelsMade o2)
+          , outputLabelsNeeded =
+                S.union
+                    (outputLabelsNeeded o1)
+                    (outputLabelsNeeded o2)
         }
 
 -- | Internal ΛTeXT configration state

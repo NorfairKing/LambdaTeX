@@ -1,6 +1,7 @@
 -- |
 -- TODO(kerckhove) big example here!
 --
+{-# LANGUAGE OverloadedStrings #-}
 module Text.LaTeX.LambdaTeX (
     -- * Building ΛTeX
       module Text.LaTeX.LambdaTeX
@@ -22,6 +23,7 @@ module Text.LaTeX.LambdaTeX (
 import           Control.Monad.IO.Class                  (MonadIO (..))
 
 import qualified Data.Set                                as S
+import qualified Data.Text                               as T
 import qualified Data.Text.IO                            as T
 
 import           Text.LaTeX.Base                         (LaTeX, renderFile)
@@ -45,7 +47,7 @@ import           Text.LaTeX.LambdaTeX.Utils
 --      * Automatic bibtex file generation
 --      * All safety provided by 'execLambdaTeXT'
 --      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
-buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either String ())
+buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either Text ())
 buildLaTeXProject func conf = do
     res <- execLambdaTeXT func $ projectGenerationConfig conf
     case res of
@@ -72,15 +74,21 @@ buildLaTeXProject func conf = do
 --        TODO(kerckhove) allow for faulty documents to build parts!
 --          Maybe give specialized Config instead of just selection
 --      * External dependency selection. No more '??' for external references in the output pdf.
---      * TODO(kerckhove) Internal dependency safety. No more '??' for external references in the internal pdf.
+--      * Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
-execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Either String (LaTeX, [Reference]))
+execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Either Text (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
-    return $ Right (result, refs)
+
+    let made = outputLabelsMade output
+        needed = outputLabelsNeeded output
+        diff = S.difference needed made
+    if S.null diff
+    then return $ Right (result, refs)
+    else return $ Left $ mappend "References needed but not made: " (T.concat $ S.toList diff)
 
   where
     initState :: ΛState
