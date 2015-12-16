@@ -39,6 +39,7 @@ import           Text.LaTeX.LambdaTeX.Types
 --      * LaTeX file generation
 --      * Automatic bibtex file generation
 --      * All safety provided by 'execLambdaTeXT'
+--      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
 buildLaTeXProject :: MonadIO m => ΛTeXT m a -> Selection -> m (Either String ())
 buildLaTeXProject func selec = do
     res <- execLambdaTeXT func selec
@@ -52,12 +53,13 @@ buildLaTeXProject func selec = do
 --
 --   This function takes care of a lot of safety issues:
 --
---      * Automatic subset selection. This allows you to build large documents in parts.
+--      * Subset selection. This allows you to build large documents in parts.
 --        TODO(kerckhove) allow for faulty documents to build parts!
 --          Maybe give specialized Config instead of just selection
---      * Automatic external dependency selection. No more '??' for external references in the output pdf.
---      * TODO(kerckhove) Automatic internal dependency safety. No more '??' for external references in the internal pdf.
---      * Automatic package dependency resolution, TODO(kerckhove) with packages in the right order
+--      * External dependency selection. No more '??' for external references in the output pdf.
+--      * TODO(kerckhove) Internal dependency safety. No more '??' for external references in the internal pdf.
+--      * Package dependency resolution, TODO(kerckhove) with packages in the right order
+--      * Dependency selection of figure dependencies on graphviz or tikz figures
 execLambdaTeXT :: Monad m => ΛTeXT m a -> Selection -> m (Either String (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig conf) initState
