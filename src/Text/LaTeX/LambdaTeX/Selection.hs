@@ -1,45 +1,46 @@
 module Text.LaTeX.LambdaTeX.Selection where
 
-import           Data.List                            (isPrefixOf)
+import           Control.Monad                           (when)
 
-import qualified Data.Text                            as T
+import qualified Data.Text                               as T
 
+import           Text.LaTeX.LambdaTeX.Selection.Internal
 import           Text.LaTeX.LambdaTeX.Selection.Types
 import           Text.LaTeX.LambdaTeX.Types
 
+-- * Making selections
+
+-- | Construct a selection from a space-separated list of strings representing selectors
+--
+-- > constructSelection = map constructSelector . words
 constructSelection :: String -> Selection
 constructSelection = map constructSelector . words
 
+-- | Construct a selector from a string
+--
+-- >>> constructSelector "all"
+-- > All
+--
+-- >>> constructSelector "mySection.mySubsection"
+-- > Match ["mySection", "mySubsection"]
+--
+-- >>> constructSelector "+mySection.mySubsection"
+-- > Match ["mySection", "mySubsection"]
+--
+-- >>> constructSelector "-mySection.mySubsection"
+-- > Ignore ["mySection", "mySubsection"]
 constructSelector :: String -> Selector
 constructSelector "all" = All
+constructSelector ('+':s) = Match $ map T.pack $ split s
 constructSelector ('-':s) = Ignore $ map T.pack $ split s
 constructSelector s = Match $ map T.pack $ split s
 
-split :: String -> [String]
-split = splitOn '.'
+-- * Using selections
 
-splitOn :: Char -> String -> [String]
-splitOn c s = go s []
-  where
-    go :: String -> String -> [String]
-    go [] s = [s]
-    go (sc:ss) acc | sc == c   = acc : go [] ss
-                   | otherwise = go ss (acc ++ [sc])
-
-selects :: Part -> [Selector] -> Bool
-selects (Part ps) ss = go ps ss False
-    where
-        go :: [Text] -> [Selector] -> Bool -> Bool
-        go _ [] b                       = b
-        go ps (All:ss) _                = go ps ss True
-        go ps ((Match s):ss) b          = if ps `matches` s
-                                          then go ps ss True
-                                          else go ps ss b
-        go ps ((Ignore s):ss) True      = if ps `matches` s
-                                          then go ps ss False
-                                          else go ps ss True
-        go ps ((Ignore _):ss) False     = go ps ss False
-
-matches :: [Text] -> [Text] -> Bool
-matches ps s = s `isPrefixOf` ps
+-- | Declare a sub-part of the document with a name.
+--   This allows you to use the subset-selection feature later.
+note :: Monad m => Text -> ΛTeXT m () -> ΛTeXT m ()
+note partname func = inPart partname $ do
+    s <- isSelected
+    when s func
 

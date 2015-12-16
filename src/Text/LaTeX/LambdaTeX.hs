@@ -3,8 +3,8 @@ module Text.LaTeX.LambdaTeX (
       buildLaTeXProject
     , execLambdaTeXT
 
-    -- * Using ΛTeX
-    , note
+    -- ** Selections
+    , module Text.LaTeX.LambdaTeX.Selection
 
     -- ** References
     , module Text.LaTeX.LambdaTeX.Reference
@@ -17,7 +17,6 @@ module Text.LaTeX.LambdaTeX (
 
     ) where
 
-import           Control.Monad                         (when)
 import           Control.Monad.IO.Class                (MonadIO (..))
 
 import qualified Data.Set                              as S
@@ -69,32 +68,5 @@ execLambdaTeXT func conf = do
   where
     initState :: ΛState
     initState = State { stateCurrentPart = emptyPart }
-
--- | Make a sub-part of the document with a name.
---   This allows you to use the subset-selection feature later.
-note :: Monad m => Text -> ΛTeXT m () -> ΛTeXT m ()
-note partname func = do
-    pushCurrentPart partname
-
-    s <- isSelected
-    when s func
-
-    popCurrentPart
-
-
-isSelected :: Monad m => ΛTeXT m Bool
-isSelected = do
-    part <- currentPart
-    sels <- λasks configSelection
-    return $ selects part sels
-
-currentPart :: Monad m => ΛTeXT m Part
-currentPart = λgets stateCurrentPart
-
-pushCurrentPart :: Monad m => Text -> ΛTeXT m ()
-pushCurrentPart partname = λmodify (\s -> s { stateCurrentPart = pushPart (stateCurrentPart s) partname})
-
-popCurrentPart :: Monad m => ΛTeXT m ()
-popCurrentPart = λmodify (\s -> s { stateCurrentPart = popPart $ stateCurrentPart s })
 
 

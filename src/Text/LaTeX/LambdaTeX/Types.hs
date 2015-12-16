@@ -117,6 +117,7 @@ instance (Monad m, a ~ ()) => Monoid (ΛTeXT m a) where
 extractΛLaTeX :: Monad m => ΛTeXT m a -> ΛTeXT m (a,LaTeX)
 extractΛLaTeX = ΛTeXT . extractLaTeX . unwrapΛTeXT
 
+-- | Like 'extractΛLaTeX' but without the result
 extractΛLaTeX_ :: Monad m => ΛTeXT m a -> ΛTeXT m LaTeX
 extractΛLaTeX_ = liftM snd . extractΛLaTeX
 
