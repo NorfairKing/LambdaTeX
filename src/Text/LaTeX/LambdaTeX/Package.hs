@@ -1,3 +1,6 @@
+-- | This module allows you to automatically resolve LaTeX package dependencies in your document.
+--
+-- Note: If you want different arguments to a package, you have to specify this by making a 'manual' 'packageDep' declaration before your document.
 module Text.LaTeX.LambdaTeX.Package where
 
 import           Text.LaTeX.Base.Syntax
