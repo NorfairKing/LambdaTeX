@@ -20,7 +20,7 @@ module Text.LaTeX.LambdaTeX.Types (
 
 #if !MIN_VERSION_base(4,8,0)
 import           Control.Applicative
-import           Data.Monoid
+import           Data.Monoid                          hiding (All)
 #endif
 
 import           Control.Monad                        (liftM)
