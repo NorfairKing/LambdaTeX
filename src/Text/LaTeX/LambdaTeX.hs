@@ -45,25 +45,24 @@ import           Text.LaTeX.LambdaTeX.Utils
 --
 --      * LaTeX file generation
 --      * Automatic bibtex file generation
---      * All safety provided by 'execLambdaTeXT'
+--      * All safety provided by 'execLambdaTeXT' (in the form of textual errors)
 --      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
 buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either Text ())
 buildLaTeXProject func conf = do
     (errs, (latex, refs)) <- execLambdaTeXT func $ projectGenerationConfig conf
-    if T.null errs
-    then do
-        -- Render tex file
-        let mainTexFile = projectTexFileName conf ++ "tex"
-        liftIO $ renderFile mainTexFile latex
 
-        -- Render bib file
-        let mainBibFile = projectBibFileName conf ++ "bib"
-        liftIO $ removeIfExists mainBibFile
-        liftIO $ T.appendFile mainBibFile $ renderReferences refs
+    -- Render tex file
+    let mainTexFile = projectTexFileName conf ++ "tex"
+    liftIO $ renderFile mainTexFile latex
 
-        return $ Right ()
-    else do
-        return $ Left errs
+    -- Render bib file
+    let mainBibFile = projectBibFileName conf ++ "bib"
+    liftIO $ removeIfExists mainBibFile
+    liftIO $ T.appendFile mainBibFile $ renderReferences refs
+
+    return $ if T.null errs
+        then Right ()
+        else Left errs
 
 -- | Execute a ΛTeXT generation
 --   This either returns a tuple of the errors and a tuple of the resulting LaTeX value and a list of external references that need to be put into a bibtex file.
@@ -75,6 +74,8 @@ buildLaTeXProject func conf = do
 --      * Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
+--
+--      TODO(kerckhove) Error data type
 execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Text, (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
