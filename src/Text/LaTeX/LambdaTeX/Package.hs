@@ -28,7 +28,6 @@ injectPackageDependencies ps = go
     go (TeXSeq t1 t2) = TeXSeq (go t1) (go t2)
     go c = c
 
-    -- TODO(kerckhove) Make sure that packages end up in the right order
     packages :: LaTeX
     packages = mconcat $ map (\(PackageDep name args) -> usepackage args name) ps
 
