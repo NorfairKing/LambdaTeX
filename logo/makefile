@@ -5,5 +5,5 @@ logo.svg: logo.tex
 	latexmk -c logo.tex
 
 logo.png: logo.svg
-	inkscape  -w 600 logo.svg -e logo.png
+	inkscape  -w 400 logo.svg -e logo.png
 
