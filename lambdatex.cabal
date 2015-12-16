@@ -19,6 +19,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Text.LaTeX.LambdaTeX
                        Text.LaTeX.LambdaTeX.Reference
+                       Text.LaTeX.LambdaTeX.Reference.Internal
                        Text.LaTeX.LambdaTeX.Reference.Types
                        Text.LaTeX.LambdaTeX.Types
                        Text.LaTeX.LambdaTeX.Package
