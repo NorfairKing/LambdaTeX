@@ -3,9 +3,14 @@
 {-# LANGUAGE UndecidableInstances  #-}
 
 module Text.LaTeX.LambdaTeX (
-      note
-    , execLambdaTeXT
+    -- * Building ΛTeX
+      execLambdaTeXT
+    , buildLaTeXProject
 
+    -- * Using ΛTeX
+    , note
+
+    -- * Re-exports
     , module Text.LaTeX.LambdaTeX.Types
     , module Text.LaTeX.LambdaTeX.Reference
     , module Text.LaTeX.LambdaTeX.Reference.Types
@@ -13,6 +18,7 @@ module Text.LaTeX.LambdaTeX (
     ) where
 
 import           Control.Monad                        (when)
+import           Control.Monad.IO.Class               (MonadIO (..))
 
 import qualified Data.Set                             as S
 
@@ -25,12 +31,23 @@ import           Text.LaTeX.LambdaTeX.Selection
 import           Text.LaTeX.LambdaTeX.Selection.Types
 import           Text.LaTeX.LambdaTeX.Types
 
+-- | Build all the files for a LaTeX project given by a ΛTeXT generator
+--   This either returns Left with an error or Right () to signify success.
+buildLaTeXProject :: MonadIO m => ΛTeXT m a -> Selection -> m (Either String ())
+buildLaTeXProject func selec = do
+    res <- execLambdaTeXT func selec
+    case res of
+        Left err -> return $ Left err
+        Right _ -> return $ Right ()
+    -- TODO(kerckhove) Make bibtex file?
+
+-- | Execute a ΛTeXT generation
+--   This either returns Left with an error or Right with the resulting LaTeX value and a list of external references that need to be put into a bibtex file.
 execLambdaTeXT :: Monad m => ΛTeXT m a -> Selection -> m (Either String (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (Config conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
-    -- TODO(kerckhove) Make bibtex file?
     -- TODO(kerckhove) Check internal references
     return $ Right (result, refs)
 
