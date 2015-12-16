@@ -19,19 +19,22 @@ module Text.LaTeX.LambdaTeX (
 
     ) where
 
-import           Control.Monad.IO.Class                (MonadIO (..))
+import           Control.Monad.IO.Class                  (MonadIO (..))
 
-import qualified Data.Set                              as S
+import qualified Data.Set                                as S
+import qualified Data.Text.IO                            as T
 
-import           Text.LaTeX.Base                       (LaTeX)
+import           Text.LaTeX.Base                         (LaTeX, renderFile)
 
 import           Text.LaTeX.LambdaTeX.Package
 import           Text.LaTeX.LambdaTeX.Package.Internal
 import           Text.LaTeX.LambdaTeX.Reference
+import           Text.LaTeX.LambdaTeX.Reference.Internal
 import           Text.LaTeX.LambdaTeX.Reference.Types
 import           Text.LaTeX.LambdaTeX.Selection
 import           Text.LaTeX.LambdaTeX.Selection.Types
 import           Text.LaTeX.LambdaTeX.Types
+import           Text.LaTeX.LambdaTeX.Utils
 
 -- | Build all the files for a LaTeX project given by a ΛTeXT generator
 --   This either returns Left with an error or Right () to signify success.
@@ -47,8 +50,18 @@ buildLaTeXProject func conf = do
     res <- execLambdaTeXT func $ projectGenerationConfig conf
     case res of
         Left err -> return $ Left err
-        Right _ -> return $ Right ()
-    -- TODO(kerckhove) Make bibtex file?
+        Right (latex, refs) -> do
+
+            -- Render tex file
+            let mainTexFile = projectTexFileName conf ++ "tex"
+            liftIO $ renderFile mainTexFile latex
+
+            -- Render bib file
+            let mainBibFile = projectBibFileName conf ++ "bib"
+            liftIO $ removeIfExists mainBibFile
+            liftIO $ T.appendFile mainBibFile $ renderReferences refs
+
+            return $ Right ()
 
 -- | Execute a ΛTeXT generation
 --   This either returns Left with an error or Right with the resulting LaTeX value and a list of external references that need to be put into a bibtex file.
@@ -79,6 +92,8 @@ execLambdaTeXT func conf = do
 -- | Configuration of a ΛTeX project
 data ProjectConfig = ProjectConfig {
       projectGenerationConfig :: GenerationConfig
+    , projectBibFileName      :: String
+    , projectTexFileName      :: String
     }
 
 -- | Default project configuration.
@@ -87,6 +102,8 @@ data ProjectConfig = ProjectConfig {
 defaultProjectConfig :: ProjectConfig
 defaultProjectConfig = ProjectConfig {
       projectGenerationConfig = defaultGenerationConfig
+    , projectBibFileName = "main"
+    , projectTexFileName = "main"
     }
 
 -- | Configuration of ΛTeX generation
