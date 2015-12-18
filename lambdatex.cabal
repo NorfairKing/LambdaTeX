@@ -20,6 +20,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Text.LaTeX.LambdaTeX
+                       Text.LaTeX.LambdaTeX.Error
                        Text.LaTeX.LambdaTeX.Package
                        Text.LaTeX.LambdaTeX.Package.Internal
                        Text.LaTeX.LambdaTeX.Package.Types

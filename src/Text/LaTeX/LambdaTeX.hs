@@ -47,7 +47,7 @@ import           Text.LaTeX.LambdaTeX.Utils
 --      * Automatic bibtex file generation
 --      * All safety provided by 'execLambdaTeXT' (in the form of textual errors)
 --      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
-buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either Text ())
+buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either [ΛError] ())
 buildLaTeXProject func conf = do
     (errs, (latex, refs)) <- execLambdaTeXT func $ projectGenerationConfig conf
 
@@ -60,7 +60,7 @@ buildLaTeXProject func conf = do
     liftIO $ removeIfExists mainBibFile
     liftIO $ T.appendFile mainBibFile $ renderReferences refs
 
-    return $ if T.null errs
+    return $ if null errs
         then Right ()
         else Left errs
 
@@ -74,9 +74,7 @@ buildLaTeXProject func conf = do
 --      * Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
---
---      TODO(kerckhove) Error data type
-execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m (Text, (LaTeX, [Reference]))
+execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m ([ΛError], (LaTeX, [Reference]))
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
@@ -87,9 +85,7 @@ execLambdaTeXT func conf = do
         needed = outputLabelsNeeded output
         diff = S.difference needed made
 
-    let referss = if S.null diff
-        then T.empty
-        else mappend "References needed but not made: " (T.pack $ show $ S.toList diff)
+    let referss = map ReferenceMissing $ S.toList diff
 
     return (referss, (result, refs))
 

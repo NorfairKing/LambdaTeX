@@ -8,6 +8,7 @@
 module Text.LaTeX.LambdaTeX.Types (
       module Text.LaTeX.LambdaTeX.Types
     , module Text.LaTeX.LambdaTeX.Part
+    , module Text.LaTeX.LambdaTeX.Error
     , module Text.LaTeX.LambdaTeX.Package.Types
     , module Text.LaTeX.LambdaTeX.Reference.Types
     , module Text.LaTeX.LambdaTeX.Selection.Types
@@ -44,6 +45,7 @@ import           Text.LaTeX.Base.Writer               (extractLaTeX, textell)
 
 import           Text.LaTeX.Packages.AMSMath          ()
 
+import           Text.LaTeX.LambdaTeX.Error
 import           Text.LaTeX.LambdaTeX.Package.Types
 import           Text.LaTeX.LambdaTeX.Part
 import           Text.LaTeX.LambdaTeX.Reference.Types
