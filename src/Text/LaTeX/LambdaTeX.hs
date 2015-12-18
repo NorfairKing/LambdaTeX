@@ -91,7 +91,7 @@ execLambdaTeXT func conf = do
         then T.empty
         else mappend "References needed but not made: " (T.pack $ show $ S.toList diff)
 
-    return (referss, (latex, refs))
+    return (referss, (result, refs))
 
   where
     initState :: ΛState
