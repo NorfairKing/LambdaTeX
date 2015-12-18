@@ -52,11 +52,11 @@ buildLaTeXProject func conf = do
     (errs, (latex, refs)) <- execLambdaTeXT func $ projectGenerationConfig conf
 
     -- Render tex file
-    let mainTexFile = projectTexFileName conf ++ "tex"
+    let mainTexFile = projectTexFileName conf ++ ".tex"
     liftIO $ renderFile mainTexFile latex
 
     -- Render bib file
-    let mainBibFile = projectBibFileName conf ++ "bib"
+    let mainBibFile = projectBibFileName conf ++ ".bib"
     liftIO $ removeIfExists mainBibFile
     liftIO $ T.appendFile mainBibFile $ renderReferences refs
 
