@@ -23,6 +23,7 @@ library
                        Text.LaTeX.LambdaTeX.Package
                        Text.LaTeX.LambdaTeX.Package.Internal
                        Text.LaTeX.LambdaTeX.Package.Types
+                       Text.LaTeX.LambdaTeX.Part
                        Text.LaTeX.LambdaTeX.Reference
                        Text.LaTeX.LambdaTeX.Reference.Internal
                        Text.LaTeX.LambdaTeX.Reference.Types

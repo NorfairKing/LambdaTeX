@@ -7,6 +7,7 @@
 
 module Text.LaTeX.LambdaTeX.Types (
       module Text.LaTeX.LambdaTeX.Types
+    , module Text.LaTeX.LambdaTeX.Part
     , module Text.LaTeX.LambdaTeX.Package.Types
     , module Text.LaTeX.LambdaTeX.Reference.Types
     , module Text.LaTeX.LambdaTeX.Selection.Types
@@ -44,6 +45,7 @@ import           Text.LaTeX.Base.Writer               (extractLaTeX, textell)
 import           Text.LaTeX.Packages.AMSMath          ()
 
 import           Text.LaTeX.LambdaTeX.Package.Types
+import           Text.LaTeX.LambdaTeX.Part
 import           Text.LaTeX.LambdaTeX.Reference.Types
 import           Text.LaTeX.LambdaTeX.Selection.Types
 
@@ -169,18 +171,6 @@ instance Monoid ΛOutput where
 data ΛState = ΛState {
       stateCurrentPart :: Part
     }
-
--- ** Part (Subset of notes)
-newtype Part = Part { unPart :: [Text] }
-
-emptyPart :: Part
-emptyPart = Part { unPart = [] }
-
-pushPart :: Part -> Text -> Part
-pushPart p t = Part { unPart = unPart p ++ [t] }
-
-popPart :: Part -> Part
-popPart p = Part { unPart = init $ unPart p }
 
 -- Orphan Monad Transformer instances for LaTeXT
 instance MonadReader r m => MonadReader r (LaTeXT m) where
