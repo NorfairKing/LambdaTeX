@@ -1,0 +1,16 @@
+\documentclass[crop,tikz,border=5pt,convert={outext=.svg,command=\unexpanded{pdf2svg \infile\space\outfile}},multi=false]{standalone}[2012/04/13]
+\makeatletter
+
+\usepackage{Haskelllogo}
+
+\usetikzlibrary{calc}
+\usepackage{relsize}
+\tikzset{fontscale/.style = {font=\relsize{#1}}}
+
+\begin{document}
+\begin{tikzpicture}[x=1ex,y=1ex]
+  \coordinate(hasklogoref);
+  \haskelltikzlogo[seventies,lambdainfront,xunit=1,yunit=1];
+  \node at ($ (hasklogoref) + (6.5,1.375) $) [fontscale=2] {\TeX};
+\end{tikzpicture}
+\end{document}
