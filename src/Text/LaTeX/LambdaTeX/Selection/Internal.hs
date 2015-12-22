@@ -79,4 +79,4 @@ splitOn c s = go s []
 
 -- | Tests whether a given part matches a given selector's part specification
 matches :: [Text] -> [Text] -> Bool
-matches = flip isPrefixOf
+matches a b = (a `isPrefixOf` b) || (b `isPrefixOf` a)
