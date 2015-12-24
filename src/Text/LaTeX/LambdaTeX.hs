@@ -15,19 +15,25 @@ module Text.LaTeX.LambdaTeX (
     -- ** Packages dependencies
     , module Text.LaTeX.LambdaTeX.Package
 
+    -- ** IO dependencies
+    , module Text.LaTeX.LambdaTeX.Action
+
     -- ** Re-exports
     , module Text.LaTeX.LambdaTeX.Types
 
     ) where
 
+import           Control.Monad                           (forM_)
 import           Control.Monad.IO.Class                  (MonadIO (..))
 
+import           Control.Concurrent.Async                (async, wait)
+
 import qualified Data.Set                                as S
-import qualified Data.Text                               as T
 import qualified Data.Text.IO                            as T
 
 import           Text.LaTeX.Base                         (LaTeX, renderFile)
 
+import           Text.LaTeX.LambdaTeX.Action
 import           Text.LaTeX.LambdaTeX.Package
 import           Text.LaTeX.LambdaTeX.Package.Internal
 import           Text.LaTeX.LambdaTeX.Reference
@@ -46,19 +52,30 @@ import           Text.LaTeX.LambdaTeX.Utils
 --      * LaTeX file generation
 --      * Automatic bibtex file generation
 --      * All safety provided by 'execLambdaTeXT' (in the form of textual errors)
---      * TODO(kerckhove) Automatic asynchronic resolution of figure dependencies on graphviz or tikz figures
+--      * Automatic asynchronic resolution of IO dependencies for graphviz or tikz figures
 buildLaTeXProject :: MonadIO m => ΛTeXT m a -> ProjectConfig -> m (Either [ΛError] ())
 buildLaTeXProject func conf = do
-    (errs, (latex, refs)) <- execLambdaTeXT func $ projectGenerationConfig conf
+    (errs, latex, refs, actions) <- execLambdaTeXT func $ projectGenerationConfig conf
+
 
     -- Render tex file
-    let mainTexFile = projectTexFileName conf ++ ".tex"
-    liftIO $ renderFile mainTexFile latex
+    let renderTex = do
+            let mainTexFile = projectTexFileName conf ++ ".tex"
+            renderFile mainTexFile latex
 
     -- Render bib file
-    let mainBibFile = projectBibFileName conf ++ ".bib"
-    liftIO $ removeIfExists mainBibFile
-    liftIO $ T.appendFile mainBibFile $ renderReferences refs
+    let renderMain = do
+            let mainBibFile = projectBibFileName conf ++ ".bib"
+            removeIfExists mainBibFile
+            T.appendFile mainBibFile $ renderReferences refs
+
+    let performAction (name, action) = do
+            action
+            putStrLn $ "Job " ++ name ++ " done."
+
+    -- Perform all the IO actions asynchronously
+    as <- liftIO $ mapM async $ renderTex : renderMain : map performAction actions
+    liftIO $ forM_ as wait
 
     return $ if null errs
         then Right ()
@@ -74,11 +91,12 @@ buildLaTeXProject func conf = do
 --      * Internal dependency safety. No more '??' for external references in the internal pdf.
 --      * Package dependency resolution, TODO(kerckhove) with packages in the right order
 --      * Dependency selection of figure dependencies on graphviz or tikz figures
-execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m ([ΛError], (LaTeX, [Reference]))
+execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m ([ΛError], LaTeX, [Reference], [(String, IO ())])
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
     let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
     let refs = S.toList $ outputExternalReferences output
+    let actions = outputActions output
 
     -- Check reference errors
     let made = outputLabelsMade output
@@ -87,7 +105,7 @@ execLambdaTeXT func conf = do
 
     let referss = map ReferenceMissing $ S.toList diff
 
-    return (referss, (result, refs))
+    return (referss, result, refs, actions)
 
   where
     initState :: ΛState
