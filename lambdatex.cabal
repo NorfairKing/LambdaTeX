@@ -1,5 +1,5 @@
 name:                lambdatex
-version:             0.1.0.2
+version:             0.1.0.3
 synopsis:            Type-Safe LaTeX EDSL
 description:         
   ΛTeX, pronounced 'LambdaTeX' is a Haskell EDSL that adds type-safety to LaTeX.
