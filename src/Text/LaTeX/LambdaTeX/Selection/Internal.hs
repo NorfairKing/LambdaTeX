@@ -17,10 +17,10 @@ selects (Part ps) ss = go ps ss False
         go :: [Text] -> [Selector] -> Bool -> Bool
         go _ [] b                       = b
         go ps (All:ss) _                = go ps ss True
-        go ps ((Match s):ss) b          = if ps `matches` s
+        go ps ((Match s):ss) b          = if (ps `isPrefixOf` s || s `isPrefixOf` ps)
                                           then go ps ss True
                                           else go ps ss b
-        go ps ((Ignore s):ss) True      = if ps `matches` s
+        go ps ((Ignore s):ss) True      = if s `isPrefixOf` ps
                                           then go ps ss False
                                           else go ps ss True
         go ps ((Ignore _):ss) False     = go ps ss False
@@ -77,6 +77,3 @@ splitOn c s = go s []
                    | otherwise = go ss (acc ++ [sc])
 
 
--- | Tests whether a given part matches a given selector's part specification
-matches :: [Text] -> [Text] -> Bool
-matches a b = (a `isPrefixOf` b) || (b `isPrefixOf` a)

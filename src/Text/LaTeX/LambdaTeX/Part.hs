@@ -3,6 +3,7 @@ module Text.LaTeX.LambdaTeX.Part where
 import           Data.Text (Text)
 
 newtype Part = Part { unPart :: [Text] }
+    deriving Show
 
 emptyPart :: Part
 emptyPart = Part { unPart = [] }
