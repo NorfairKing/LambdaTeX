@@ -34,7 +34,7 @@ library
                        Text.LaTeX.LambdaTeX.Selection.Types
                        Text.LaTeX.LambdaTeX.Types
                        Text.LaTeX.LambdaTeX.Utils
-  build-depends:       base             >= 4.6      && < 5.0
+  build-depends:       base             >= 4.8      && < 5.0
                      , HaTeX            >= 3.16     && < 3.17
                      , mtl              >= 2.2      && < 2.3
                      , text             >= 1.2      && < 1.3
