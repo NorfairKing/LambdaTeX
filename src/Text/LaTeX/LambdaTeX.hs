@@ -23,7 +23,6 @@ module Text.LaTeX.LambdaTeX (
 import           Control.Monad.IO.Class                  (MonadIO (..))
 
 import qualified Data.Set                                as S
-import qualified Data.Text                               as T
 import qualified Data.Text.IO                            as T
 
 import           Text.LaTeX.Base                         (LaTeX, renderFile)
