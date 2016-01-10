@@ -140,14 +140,16 @@ data ΛOutput    = ΛOutput {
     , outputExternalReferences  :: Set Reference
     , outputLabelsMade          :: Set Text
     , outputLabelsNeeded        :: Set Text
+    , outputActions             :: [(String, IO ())]
     }
 
 instance Monoid ΛOutput where
     mempty = ΛOutput {
             outputPackageDependencies   = S.empty
           , outputExternalReferences    = S.empty
-          , outputLabelsMade = S.empty
-          , outputLabelsNeeded = S.empty
+          , outputLabelsMade            = S.empty
+          , outputLabelsNeeded          = S.empty
+          , outputActions               = []
         }
 
     mappend o1 o2 = ΛOutput {
@@ -167,6 +169,7 @@ instance Monoid ΛOutput where
                 S.union
                     (outputLabelsNeeded o1)
                     (outputLabelsNeeded o2)
+          , outputActions = outputActions o1 ++ outputActions o2
         }
 
 -- | Internal ΛTeXT configration state
