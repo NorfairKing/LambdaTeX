@@ -73,7 +73,7 @@ splitOn c s = go s []
   where
     go :: String -> String -> [String]
     go [] s = [s]
-    go (sc:ss) acc | sc == c   = acc : go [] ss
+    go (sc:ss) acc | sc == c   = acc : go ss []
                    | otherwise = go ss (acc ++ [sc])
 
 
