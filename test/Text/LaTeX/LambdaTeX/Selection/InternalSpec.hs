@@ -6,6 +6,7 @@ import           Test.QuickCheck
 
 import           Text.LaTeX.LambdaTeX.Part
 import           Text.LaTeX.LambdaTeX.Part.Arbitrary
+import           Text.LaTeX.LambdaTeX.Selection
 import           Text.LaTeX.LambdaTeX.Selection.Arbitrary
 import           Text.LaTeX.LambdaTeX.Selection.Internal
 import           Text.LaTeX.LambdaTeX.Selection.Types
@@ -38,7 +39,8 @@ spec = describe "selects" $ do
         selects p [All, Ignore ["this", "part", "but", "it", "should"]] `shouldBe` True
         selects p [All, Ignore ["this", "part", "but", "it", "should", "be"]] `shouldBe` True
         selects p [All, Ignore ["this", "part", "but", "it", "should", "be", "matched"]] `shouldBe` True
-
+    it "constructs this selection that's more than three subparts long correctly" $ do
+        constructSelector "something.in.four.subparts" `shouldBe` Match ["something", "in", "four", "subparts"]
 
 
 
