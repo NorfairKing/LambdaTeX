@@ -1,5 +1,5 @@
 name:                lambdatex
-version:             0.1.0.4
+version:             0.1.1.0
 synopsis:            Type-Safe LaTeX EDSL
 description:         
   ΛTeX, pronounced 'LambdaTeX' is a Haskell EDSL that adds type-safety to LaTeX.
@@ -35,13 +35,13 @@ library
                        Text.LaTeX.LambdaTeX.Types
                        Text.LaTeX.LambdaTeX.Utils
   build-depends:       base             >= 4.8      && < 5.0
-                     , HaTeX            >= 3.16     && < 3.17
+                     , HaTeX            >= 3.16     && < 3.18
                      , mtl              >= 2.2      && < 2.3
                      , text             >= 1.2      && < 1.3
                      , containers       >= 0.5      && < 0.6
-                     , transformers     >= 0.4      && < 0.5
+                     , transformers     >= 0.4      && < 0.6
                      , directory        >= 1.2      && < 1.3
-                     , async            >= 2.0      && < 2.1
+                     , async            >= 2.0      && < 2.2
   ghc-options:        -Wall
                       -fwarn-unused-imports
                       -fwarn-incomplete-patterns

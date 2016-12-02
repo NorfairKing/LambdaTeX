@@ -80,7 +80,7 @@ instance (Monad m, a ~ ()) => Fractional (ΛTeXT m a) where
 
 -- TODO(kerckhove) Also instantiate floating?
 
-runΛTeX :: Monad m => ΛTeXT m a -> ΛConfig -> ΛState -> m ((a, LaTeX), ΛState, ΛOutput)
+runΛTeX :: ΛTeXT m a -> ΛConfig -> ΛState -> m ((a, LaTeX), ΛState, ΛOutput)
 runΛTeX func conf state = runRWST (runLaTeXT $ unwrapΛTeXT func) conf state
 
 instance MonadTrans ΛTeXT where
