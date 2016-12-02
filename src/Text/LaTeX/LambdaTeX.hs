@@ -23,7 +23,7 @@ module Text.LaTeX.LambdaTeX (
 
     ) where
 
-import           Control.Monad                           (forM_)
+import           Control.Monad                           (forM_, void)
 import           Control.Monad.IO.Class                  (MonadIO (..))
 
 import           Control.Concurrent.Async                (async, wait)
@@ -70,7 +70,7 @@ buildLaTeXProject func conf = do
             T.appendFile mainBibFile $ renderReferences refs
 
     let performAction (name, action) = do
-            action
+            void action
             putStrLn $ "Job " ++ name ++ " done."
 
     -- Perform all the IO actions asynchronously
@@ -94,7 +94,12 @@ buildLaTeXProject func conf = do
 execLambdaTeXT :: Monad m => ΛTeXT m a -> GenerationConfig -> m ([ΛError], LaTeX, [Reference], [(String, IO ())])
 execLambdaTeXT func conf = do
     ((_,latex), _, output) <- runΛTeX func (ΛConfig $ generationSelection conf) initState
-    let result = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
+
+    let mresult = injectPackageDependencies (S.toList $ outputPackageDependencies output) latex
+    let (extraErrs, result) = case mresult of
+            Nothing -> ([IncompatibleDependencies], latex)
+            Just res -> ([], res)
+
     let refs = S.toList $ outputExternalReferences output
     let actions = outputActions output
 
@@ -105,7 +110,7 @@ execLambdaTeXT func conf = do
 
     let referss = map ReferenceMissing $ S.toList diff
 
-    return (referss, result, refs, actions)
+    return (extraErrs ++ referss, result, refs, actions)
 
   where
     initState :: ΛState
