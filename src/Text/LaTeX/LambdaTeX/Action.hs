@@ -10,6 +10,6 @@ import Text.LaTeX.LambdaTeX.Types
 registerAction ::
        Monad m
     => String -- ^ Name of the job
-    -> IO () -- ^ Job
+    -> (FilePath -> IO ()) -- ^ Job, it takes the project directory as an argument
     -> ΛTeXT m ()
 registerAction name func = λtell $ mempty {outputActions = [(name, func)]}

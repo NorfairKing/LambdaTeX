@@ -64,7 +64,7 @@ buildLaTeXProject func conf = do
             T.appendFile (projectBuildDir conf </> mainBibFile) $
                 renderReferences refs
     let performAction (name, action) = do
-            void action
+            void $ action $ projectBuildDir conf
             putStrLn $ "Job " ++ name ++ " done."
     -- Perform all the IO actions asynchronously
     as <-
@@ -89,7 +89,7 @@ execLambdaTeXT ::
        Monad m
     => ΛTeXT m a
     -> GenerationConfig
-    -> m ([ΛError], LaTeX, [Reference], [(String, IO ())])
+    -> m ([ΛError], LaTeX, [Reference], [(String, FilePath -> IO ())])
 execLambdaTeXT func conf = do
     ((_, latex), _, output) <-
         runΛTeX func (ΛConfig $ generationSelection conf) initState

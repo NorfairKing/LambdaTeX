@@ -132,7 +132,7 @@ data ΛOutput = ΛOutput
     , outputExternalReferences :: Set Reference
     , outputLabelsMade :: Set Text
     , outputLabelsNeeded :: Set Text
-    , outputActions :: [(String, IO ())]
+    , outputActions :: [(String, FilePath -> IO ())]
     }
 
 instance Monoid ΛOutput where
