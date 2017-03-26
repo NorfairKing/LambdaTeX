@@ -37,7 +37,6 @@ import Text.LaTeX.LambdaTeX.Reference.Types
 import Text.LaTeX.LambdaTeX.Selection
 import Text.LaTeX.LambdaTeX.Selection.Types
 import Text.LaTeX.LambdaTeX.Types
-import Text.LaTeX.LambdaTeX.Utils
 
 -- | Build all the files for a LaTeX project given by a ΛTeXT generator
 --   This either returns Left with an error or Right () to signify success.
@@ -60,8 +59,7 @@ buildLaTeXProject func conf = do
     -- Render bib file
     let renderMain = do
             let mainBibFile = projectBibFileName conf ++ ".bib"
-            removeIfExists mainBibFile
-            T.appendFile (projectBuildDir conf </> mainBibFile) $
+            T.writeFile (projectBuildDir conf </> mainBibFile) $
                 renderReferences refs
     let performAction (name, action) = do
             void $ action $ projectBuildDir conf
