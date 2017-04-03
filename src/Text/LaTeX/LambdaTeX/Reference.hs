@@ -1,15 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Text.LaTeX.LambdaTeX.Reference where
 
-import           Text.LaTeX.Base.Class
-import           Text.LaTeX.Base.Syntax
+import Text.LaTeX.Base.Class
+import Text.LaTeX.Base.Syntax
 
-import qualified Text.LaTeX.Base.Commands                as H (label, pageref,
-                                                               ref)
+import qualified Text.LaTeX.Base.Commands as H
+       (label, pageref, ref)
 
-import           Text.LaTeX.LambdaTeX.Reference.Internal
-import           Text.LaTeX.LambdaTeX.Reference.Types
-import           Text.LaTeX.LambdaTeX.Types
+import Text.LaTeX.LambdaTeX.Reference.Internal
+import Text.LaTeX.LambdaTeX.Reference.Types
+import Text.LaTeX.LambdaTeX.Types
 
 -- * Internal references
 -- An internal references point is defined by a label
@@ -17,9 +18,7 @@ import           Text.LaTeX.LambdaTeX.Types
 --
 -- ΛTeX automatically ensures that those references are always internally consistent
 -- BUT you have to make sure that you use these functions instead of the regular ones.
-
 -- ** Labels
-
 -- | Label a part
 label :: Monad m => Text -> ΛTeXT m ()
 label l = do
@@ -40,27 +39,24 @@ pageref l = do
 
 -- * External references
 -- ** Defining references
-
 -- TODO(kerckhove) Check for duplicate fields?
-
 -- | Define an external reference.
 --   Use 'cite' or 'nocite' to use this in your document.
 makeReference :: ReferenceType -> Text -> [(Text, Text)] -> Reference
 makeReference = Reference
 
 -- ** Using references
-
 -- | Refer to an external reference.
 cite :: Monad m => Reference -> ΛTeXT m ()
-cite ref = do
-  fromLaTeX $ comm1 "cite" $ TeXRaw $ referenceName ref
-  addReference ref
+cite rf = do
+    fromLaTeX $ comm1 "cite" $ TeXRaw $ referenceName rf
+    addReference rf
 
 -- | Put an external reference in your list of references without using it.
 nocite :: Monad m => Reference -> ΛTeXT m ()
-nocite ref = do
-  fromLaTeX $ comm1 "nocite" $ TeXRaw $ referenceName ref
-  addReference ref
+nocite rf = do
+    fromLaTeX $ comm1 "nocite" $ TeXRaw $ referenceName rf
+    addReference rf
 
 -- ** Reference Types
 --
@@ -78,4 +74,3 @@ online = "online"
 
 article :: ReferenceType
 article = "article"
-
